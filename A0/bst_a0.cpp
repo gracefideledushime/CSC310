@@ -111,6 +111,36 @@ class BST{
 
             return root;
         }
+
+        void inorder_traversal(Node* root){
+            if(root == nullptr) {
+                // cout << "Emptyyy" << endl;
+                return;
+            }
+            printBST(root->leftChild);
+            cout << root->data << endl;
+            printBST(root->rightChild);
+        }
+
+        void preorder_traversal(Node* root){
+            if(root == nullptr) {
+                // cout << "Emptyyy" << endl;
+                return;
+            }
+            cout << root->data << endl;
+            printBST(root->leftChild);
+            printBST(root->rightChild);
+        }
+
+        void post_order_traversal(Node* root){
+            if(root == nullptr) {
+                // cout << "Emptyyy" << endl;
+                return;
+            }
+            printBST(root->leftChild);
+            printBST(root->rightChild);
+            cout << root->data << endl;
+        }
     };
 
 
