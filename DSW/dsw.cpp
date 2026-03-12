@@ -1,4 +1,5 @@
 #include "dsw.h"
+#include "customErrorClass.h"
 
 // ----------------- PRIVATE ----------------------------------
 
@@ -6,7 +7,7 @@
 void BST::rotateRight(Node*& node) // passing the parent
 {
     if(node == nullptr || node->left == nullptr)
-        return;
+        throw MyException("Null node. Can't make changes");
     
     // get the node to rotate R
     Node* leftChild = node->left; 
@@ -22,7 +23,7 @@ void BST::rotateRight(Node*& node) // passing the parent
 void BST::rotateLeft(Node*& node)
 {
     if(node == nullptr || node->right == nullptr)
-        return;
+        throw MyException("Null node. Can't make changes");
 
     // get the node to rotate L
     Node* rightChild = node->right;
@@ -51,31 +52,37 @@ void BST::createVine()
     Node* grandparent = nullptr;
     Node* parent = root;
     Node* child = root->right;
+    MyException excp("Null node. Can't make changes");
 
-    while(parent != nullptr){
-        if(child != nullptr) {
-            if (subtreeSize(parent->right) > 2 ) {
-                rotateLeft(parent);
-            
-                if(grandparent == nullptr)
-                    root = parent;
-                else
-                    grandparent->left = parent;
-                    child = parent->right;
-            }
-            else {
+    try{
+        while(parent != nullptr){
+            if(child != nullptr) {
+                if (subtreeSize(parent->right) > 2 ) {
+                
+                        rotateLeft(parent);
+                
+                        if(grandparent == nullptr)
+                            root = parent;
+                        else
+                            grandparent->left = parent;
+                            child = parent->right;
+                }
+                else {
+                    grandparent = parent;
+                    parent = parent->left;
+                    if(parent != nullptr)
+                        child = parent->left;
+                }
+            } else{ // no right child -> just keep moving
                 grandparent = parent;
                 parent = parent->left;
                 if(parent != nullptr)
                     child = parent->left;
             }
-        } else{ // no right child -> just keep moving
-            grandparent = parent;
-            parent = parent->left;
-            if(parent != nullptr)
-                child = parent->left;
         }
-    }
+                    } catch(MyException& e){
+                        std::cerr << e.what() << '\n';
+                    }
 }
 
 void BST::rebuildTree(int size)
@@ -105,26 +112,31 @@ void BST::performRotation(int count)
     Node* parent = root;
 
     Node* child = parent->right;
-
-    int i = 1;
+    MyException excp("Null node. Can't make changes");
+    
+            int i = 1;
     while (parent != nullptr && parent->left != nullptr && count > 0){
         if(i%2==1){
-            if(grandparent == nullptr){
-                rotateRight(root);
-                parent = root;
+            try{
+                if(grandparent == nullptr){
+                    rotateRight(root);
+                    parent = root;
+                }
+                else{
+                    rotateRight(grandparent->left);
+                    parent = grandparent->left;
+                }
+                count--;
             }
-            else{
-                rotateRight(grandparent->left);
-                parent = grandparent->left;
+            catch(MyException& e){
+                std::cerr << e.what() << '\n';
             }
-            count--;
         }else{
             grandparent = parent;
             parent = grandparent->left;
         }
         i++;
-    }
-
+    }   
 }
 
 void BST::printTree(Node* root, int space) {

@@ -1,4 +1,5 @@
 #include "dsw.h"
+#include "customErrorClass.h"
 
 int main()
 {
