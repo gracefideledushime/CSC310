@@ -136,22 +136,44 @@ void RBTREE::insertR(Node *&root, Node *&node)
 
 void RBTREE::insertFix(Node *k)
 {
-    // Node *uncle;
-
-    // 3 cases
-    // consecutive red nodes in the left branch
-    // two red children - a red node can't be a right child
-
-    // Ordinary RB - Symmetry
-    // LLRB - RED node is the r child
-    // don't worry about the uncle
-
+    Node *sibling;
     while (k != root && k->parent->color == RED)
     {
-        if (k->color == RED)
+        if (k == k->parent->left)
         {
-            //
+            if (k->parent->right != nullptr)
+            {
+                sibling = k->parent->right;
+                if (sibling == nullptr)
+                {
+                    cout << "good?";
+                    return;
+                }
+                if (k->color == BLACK && sibling->color == RED)
+                {
+                    // Case 1: Red link is on the right – rotate left and swap colors
+                    leftRotate(k->parent);
+                    rotations++;
+                    k->color = RED;
+                    sibling->color = BLACK;
+                }
+                // Case 3: Two red children – flip the colors
+                if (k->color == RED && sibling->color == RED)
+                {
+                    k->color = RED;
+                    sibling->color = BLACK;
+                }
+            }
+            // Case 2: Two consecutive red nodes on the left – rotate right and swap colors
+            if (k->color == RED)
+            {
+                rightRotate(k->parent);
+                rotations++;
+                k->color = BLACK;
+                k->parent->color = BLACK;
+            }
         }
+        k = k->parent;
     }
 
     root->color = BLACK;
