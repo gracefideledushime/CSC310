@@ -136,7 +136,6 @@ void RBTREE::insertR(Node *&root, Node *&node)
 
 void RBTREE::insertFix(Node *k)
 {
-    cout << "STARTING";
     Node *sibling;
     while (k != root && k->parent->color == RED)
     {
@@ -144,7 +143,6 @@ void RBTREE::insertFix(Node *k)
         {
             if (k->parent->right != nullptr)
             {
-                cout << "HALLOO";
                 sibling = k->parent->right;
                 if (sibling == nullptr)
                 {
@@ -155,6 +153,7 @@ void RBTREE::insertFix(Node *k)
                 {
                     // Case 1: Red link is on the right – rotate left and swap colors
                     leftRotate(k->parent);
+                    rotations++;
                     k->color = RED;
                     sibling->color = BLACK;
                 }
@@ -169,6 +168,7 @@ void RBTREE::insertFix(Node *k)
             if (k->color == RED)
             {
                 rightRotate(k->parent);
+                rotations++;
                 k->color = BLACK;
                 k->parent->color = BLACK;
             }
