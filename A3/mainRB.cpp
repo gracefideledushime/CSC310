@@ -4,7 +4,7 @@ int main()
 {
     RBTREE llrb;
 
-    for (int i = 1; i < 4; i++)
+    for (int i = 1; i < 10; i++)
         llrb.insert(i);
     // cout << "-------------------------------------" << endl;
     llrb.printTree();
