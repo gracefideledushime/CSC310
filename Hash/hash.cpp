@@ -120,13 +120,17 @@ void HashTable::insert(const string &key, int value)
         {
             tableProbing[index] = {key, value};
         }
+        else
+        {
+            int i = 1;
+            index = probe(key, index, i);
+        }
     }
     elementCount++;
 }
 
 bool HashTable::search(const string &key, int &value)
 {
-    // complete this
 }
 
 bool HashTable::remove(const string &key)
