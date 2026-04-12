@@ -1,4 +1,5 @@
 #include "hash.h"
+#include "AVL/avl.h"
 
 // Constructor - initializing table based on chosen hash table variant
 HashTable::HashTable(int size, CollisionHandling variant)
@@ -60,12 +61,16 @@ int HashTable::probe(const string &key, int index, int i) const
     case LINEAR_PROBING:
         // complete this
         index = (h1 + i) % tableSize;
+        cout << 'l probing: ' << index;
     case QUADRATIC_PROBING:
         // complete this
         index = (h1 + c1 * i + c2 * i ^ 2) % tableSize;
+        cout << 'q probing: ' << index;
+
     case DOUBLE_HASHING:
         // complete this
         index = (h1 + i * h2) % tableSize;
+        cout << 'd hashing: ' << index;
     default:
         return index;
     }
@@ -91,16 +96,30 @@ void HashTable::insert(const string &key, int value)
 
     case CHAINING_LIST:
         // complete this
+        for (auto &pair : tableList[index])
+        {
+            if (pair.first == key)
+            {
+                pair.second = value; // Key already exists, update the value
+                return;
+            }
+        }
+        tableList[index].push_back({key, value}); // Qst: do you advise using
         break;
 
     case CHAINING_BST:
         // complete this - use AVL insert method
+        tableBST[index].insert(key, value);
         break;
 
     case LINEAR_PROBING:
     case QUADRATIC_PROBING:
     case DOUBLE_HASHING:
         // complete this
+        if (tableProbing[index].first.empty())
+        {
+            tableProbing[index] = {key, value};
+        }
     }
     elementCount++;
 }
