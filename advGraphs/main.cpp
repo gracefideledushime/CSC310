@@ -1,6 +1,11 @@
 #include "mst.h"
+#include <iostream>
+#include <chrono>
 
-void testSmallInput() {
+using namespace std;
+
+void testSmallInput()
+{
     cout << "=== Small Graph Test ===" << endl;
     MST graph(6);
 
@@ -20,7 +25,8 @@ void testSmallInput() {
     auto end1 = chrono::high_resolution_clock::now();
     chrono::duration<double> elapsed1 = end1 - start1;
     cout << "MST Cost: " << cost1 << endl;
-    cout << "Time taken: " << elapsed1.count() << " seconds" << endl << endl;
+    cout << "Time taken: " << elapsed1.count() << " seconds" << endl
+         << endl;
 
     cout << "Running Optimized MST..." << endl;
     auto start2 = chrono::high_resolution_clock::now();
@@ -28,24 +34,29 @@ void testSmallInput() {
     auto end2 = chrono::high_resolution_clock::now();
     chrono::duration<double> elapsed2 = end2 - start2;
     cout << "MST Cost: " << cost2 << endl;
-    cout << "Time taken: " << elapsed2.count() << " seconds" << endl << endl;
+    cout << "Time taken: " << elapsed2.count() << " seconds" << endl
+         << endl;
 }
 
-void testLargeInput(int numNodes, int numEdges) {
+void testLargeInput(int numNodes, int numEdges)
+{
     cout << "=== Large Graph Test (" << numNodes << " nodes, " << numEdges << " edges) ===" << endl;
     MST graph(numNodes);
-    srand(42); 
+    srand(42);
 
-    for (int i = 0; i < numNodes - 1; ++i) {
+    for (int i = 0; i < numNodes - 1; ++i)
+    {
         int weight = 1 + rand() % 100;
         graph.addEdge(i, i + 1, weight);
     }
 
     int addedEdges = numNodes - 1;
-    while (addedEdges < numEdges) {
+    while (addedEdges < numEdges)
+    {
         int u = rand() % numNodes;
         int v = rand() % numNodes;
-        if (u != v) {
+        if (u != v)
+        {
             int weight = 1 + rand() % 1000;
             graph.addEdge(u, v, weight);
             ++addedEdges;
@@ -58,7 +69,8 @@ void testLargeInput(int numNodes, int numEdges) {
     auto end1 = chrono::high_resolution_clock::now();
     chrono::duration<double> elapsed1 = end1 - start1;
     cout << "MST Cost: " << cost1 << endl;
-    cout << "Time taken: " << elapsed1.count() << " seconds" << endl << endl;
+    cout << "Time taken: " << elapsed1.count() << " seconds" << endl
+         << endl;
 
     cout << "Running Optimized MST..." << endl;
     auto start2 = chrono::high_resolution_clock::now();
@@ -66,15 +78,15 @@ void testLargeInput(int numNodes, int numEdges) {
     auto end2 = chrono::high_resolution_clock::now();
     chrono::duration<double> elapsed2 = end2 - start2;
     cout << "MST Cost: " << cost2 << endl;
-    cout << "Time taken: " << elapsed2.count() << " seconds" << endl << endl;
+    cout << "Time taken: " << elapsed2.count() << " seconds" << endl
+         << endl;
 }
 
-
-int main() {
-    
+int main()
+{
     testSmallInput();
 
-    testLargeInput(100000, 500000); 
+    testLargeInput(100000, 500000);
 
     return 0;
 }

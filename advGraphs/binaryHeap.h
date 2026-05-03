@@ -2,11 +2,11 @@
 #define HEAP_H
 
 #include <iostream>
-#include "mst.h" 
+#include "mst.h"
 
 using namespace std;
 
-class HEAP 
+class HEAP
 {
 private:
     struct Edge *array;
@@ -27,6 +27,7 @@ public:
     void insertH(Edge data);
     void deleteMin();
     Edge peek();
+    bool isEmpty();
 };
 
 #endif

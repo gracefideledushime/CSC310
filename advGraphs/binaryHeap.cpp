@@ -1,35 +1,36 @@
 #include "binaryHeap.h"
 
-HEAP::HEAP(int size) 
+HEAP::HEAP(int size)
 {
     capacity = size;
     heapSize = 0;
     array = new Edge[capacity];
 }
 
-HEAP::~HEAP() 
+HEAP::~HEAP()
 {
     delete[] array;
 }
 
-int HEAP::leftChild(int index) 
+int HEAP::leftChild(int index)
 {
     return 2 * index + 1;
 }
 
-int HEAP::rightChild(int index) 
+int HEAP::rightChild(int index)
 {
     return 2 * index + 2;
 }
 
-int HEAP::parent(int index) 
+int HEAP::parent(int index)
 {
     return (index - 1) / 2;
 }
 
-void HEAP::insertH(Edge data) 
+void HEAP::insertH(Edge data)
 {
-    if (heapSize == capacity) {
+    if (heapSize == capacity)
+    {
         cout << "Heap overflow: Cannot insert more elements." << endl;
         return;
     }
@@ -39,34 +40,34 @@ void HEAP::insertH(Edge data)
     heapSize++;
 }
 
-void HEAP::heapifyUpMin(int index) 
+void HEAP::heapifyUpMin(int index)
 {
-    while (index != 0 && array[parent(index)].weight > array[index].weight) 
+    while (index != 0 && array[parent(index)].weight > array[index].weight)
     {
         swap(array[parent(index)], array[index]);
         index = parent(index);
     }
 }
 
-Edge HEAP::peek() 
+Edge HEAP::peek()
 {
-    if (heapSize <= 0) 
+    if (heapSize <= 0)
     {
         cout << "Heap is empty!" << endl;
-        return Edge{-1, -1, -1};  // Dummy edge
+        return Edge{-1, -1, -1}; // Dummy edge
     }
     return array[0];
 }
 
-void HEAP::deleteMin() 
+void HEAP::deleteMin()
 {
-    if (heapSize <= 0) 
+    if (heapSize <= 0)
     {
         cout << "Heap is empty!" << endl;
         return;
     }
 
-    if (heapSize == 1) 
+    if (heapSize == 1)
     {
         heapSize--;
         return;
@@ -77,7 +78,7 @@ void HEAP::deleteMin()
     heapifyDownMin(0);
 }
 
-void HEAP::heapifyDownMin(int index) 
+void HEAP::heapifyDownMin(int index)
 {
     int left = leftChild(index);
     int right = rightChild(index);
@@ -89,9 +90,14 @@ void HEAP::heapifyDownMin(int index)
     if (right < heapSize && array[right].weight < array[smallest].weight)
         smallest = right;
 
-    if (smallest != index) 
+    if (smallest != index)
     {
         swap(array[index], array[smallest]);
         heapifyDownMin(smallest);
     }
+}
+
+bool HEAP::isEmpty()
+{
+    return heapSize == 0;
 }
