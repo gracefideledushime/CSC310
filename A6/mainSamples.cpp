@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
 
             cin >> choice;
 
-            if (choice == 1 || choice == 2 | choice == 3)
+            if (choice == 1 || choice == 2 || choice == 3)
             {
                 cout << "H_SAP species(0) offset range is: 0-" << size0 - 1 << endl;
                 cout << "M_MUS species(1) offset range is: 0-" << size1 - 1 << endl;
@@ -281,7 +281,7 @@ int main(int argc, char *argv[])
             case 2:
                 cout << "Enter a 20 char name to update record: ";
                 cin >> newName;
-                mySample.updateResearcher(indexArray[sCode], offset, newName, fileStr);
+                mySample.updateResearcher(indexArray[sCode], offset, newName1, fileStr);
                 break;
             case 3:
                 mySample.deleteSample(indexArray[sCode], offset, fileStr);
