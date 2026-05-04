@@ -6,49 +6,50 @@
 #include <chrono>
 #include <algorithm>
 #include <vector>
-
+#include "Includes/customErrorClass.h"
 
 using namespace std;
 
-struct Edge 
+struct Edge
 {
     int src;
     int dest;
     int weight;
 };
 
-class QuickUnion 
+class QuickUnion
 {
-    private:
-        vector<int> parent;
+private:
+    vector<int> parent;
 
-    public:
-        QuickUnion(int n);
-        int find(int x);
-        void Union(int x, int y);
+public:
+    QuickUnion(int n);
+    int find(int x);
+    void Union(int x, int y);
 };
 
-class UnionFind 
+class UnionFind
 {
-    private:
-        vector<int> parent, rank;
-    
-    public:
-        UnionFind(int n);
-        int find(int x);
-        void Union(int x, int y);
+private:
+    vector<int> parent, rank;
+
+public:
+    UnionFind(int n);
+    int find(int x);
+    void Union(int x, int y);
 };
 
-class MST {
-    private:
-        int n;
-        vector<Edge> edges;
+class MST
+{
+private:
+    int n;
+    vector<Edge> edges;
 
-    public:
-        MST(int vertices);
-        void addEdge(int src, int dest, int weight);
-        int kruskalV1();     // Binary Heap + simple Quick-Union
-        int kruskalV2();    // Binomial Heap + optimized Union-Find
+public:
+    MST(int vertices);
+    void addEdge(int src, int dest, int weight);
+    int kruskalV1(); // Binary Heap + simple Quick-Union
+    int kruskalV2(); // Binomial Heap + optimized Union-Find
 };
 
 #endif
