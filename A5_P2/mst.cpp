@@ -1,6 +1,7 @@
 #include "mst.h"
 #include "binaryHeap.h"   // Custom binary heap
 #include "binomialHeap.h" // Custom binomial heap
+#include "Includes/customErrorClass.h"
 #include <algorithm>
 
 using namespace std;
@@ -8,6 +9,8 @@ using namespace std;
 // ===== QuickUnion =====
 QuickUnion::QuickUnion(int n)
 {
+    if (n <= 0)
+        throw MyException("QuickUnion: cannot initialize with n <= 0, vector would be unresized.");
     parent.resize(n);
     for (int i = 0; i < n; i++)
     {
@@ -38,6 +41,8 @@ void QuickUnion::Union(int x, int y)
 // ===== UnionFind =====
 UnionFind::UnionFind(int n)
 {
+    if (n <= 0)
+        throw MyException("UnionFind: cannot initialize with n <= 0, vector would be unresized.");
     parent.resize(n);
     rank.resize(n);
     for (int i = 0; i < n; i++)

@@ -65,21 +65,32 @@ void testLargeInput(int numNodes, int numEdges)
 
     cout << "Running Baseline MST..." << endl;
     auto start1 = chrono::high_resolution_clock::now();
-    int cost1 = graph.kruskalV1();
-    auto end1 = chrono::high_resolution_clock::now();
-    chrono::duration<double> elapsed1 = end1 - start1;
-    cout << "MST Cost: " << cost1 << endl;
-    cout << "Time taken: " << elapsed1.count() << " seconds" << endl
-         << endl;
+    try
+    {
+        int cost1 = graph.kruskalV1();
+        auto end1 = chrono::high_resolution_clock::now();
+        chrono::duration<double> elapsed1 = end1 - start1;
+        cout << "MST Cost: " << cost1 << endl;
+        cout << "Time taken: " << elapsed1.count() << " seconds" << endl
+             << endl;
 
-    cout << "Running Optimized MST..." << endl;
-    auto start2 = chrono::high_resolution_clock::now();
-    int cost2 = graph.kruskalV2();
-    auto end2 = chrono::high_resolution_clock::now();
-    chrono::duration<double> elapsed2 = end2 - start2;
-    cout << "MST Cost: " << cost2 << endl;
-    cout << "Time taken: " << elapsed2.count() << " seconds" << endl
-         << endl;
+        cout << "Running Optimized MST..." << endl;
+        auto start2 = chrono::high_resolution_clock::now();
+        int cost2 = graph.kruskalV2();
+        auto end2 = chrono::high_resolution_clock::now();
+        chrono::duration<double> elapsed2 = end2 - start2;
+        cout << "MST Cost: " << cost2 << endl;
+        cout << "Time taken: " << elapsed2.count() << " seconds" << endl
+             << endl;
+    }
+    catch (MyException &e)
+    {
+        cerr << "MST Error: " << e.what() << endl;
+    }
+    catch (exception &e) // fallback for any other std exceptions
+    {
+        cerr << "Unexpected error: " << e.what() << endl;
+    }
 }
 
 int main()
