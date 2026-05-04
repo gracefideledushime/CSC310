@@ -87,7 +87,7 @@ void GENE_BANK::updateResearcher(int speciesCode, int offset, char *newName, cha
     else
     {
         cout << "Sample record to be updated doesn't exist!" << endl;
-        p_updateResearcher(speciesCode, offset, newName, filename);
+        return;
     }
 }
 
@@ -177,34 +177,122 @@ void GENE_BANK::p_index(Sample array[], int indexArray[])
 
 void GENE_BANK::p_displayResearcher(int speciesCode, int offset, char *filename)
 {
-    fstream sortedBinary;
+    fstream sortedBin;
     Sample temp;
-    sortedBinary.open(filename, ios::in | ios::binary);
-    streampos byteOffset = (speciesCode + offset) * sizeof(Sample);
-    sortedBinary.seekg(byteOffset, ios::beg);
 
-    if (!sortedBinary)
+    sortedBin.open(filename, ios::in | ios::binary);
+    streampos byteOffset = (speciesCode + offset) * sizeof(Sample);
+    sortedBin.seekg(byteOffset, ios::beg);
+
+    if (!sortedBin)
     {
-        sortedBinary.close();
+        sortedBin.close();
         return;
     }
 
     // Attempt to read the record
-    sortedBinary.read(reinterpret_cast<char *>(&temp), sizeof(Sample));
+    sortedBin.read(reinterpret_cast<char *>(&temp), sizeof(Sample));
 
-    sortedBinary.close();
+    sortedBin.close();
 
     cout << temp.researcher << endl;
 }
 
 void GENE_BANK::p_updateResearcher(int speciesCode, int offset, char *newName, char *filename)
 {
+    fstream sortedBin(filename, ios::in | ios::out | ios::binary);
+    Sample temp;
+
+    sortedBin.seekg(0, ios::beg);
+
+    if (!sortedBin)
+    {
+        sortedBin.close();
+        return;
+    }
+
+    streampos byteOffset = (speciesCode + offset) * sizeof(Sample);
+    // Attempt to read the record
+    sortedBin.seekg(byteOffset, ios::beg);
+    sortedBin.read(reinterpret_cast<char *>(&temp), sizeof(Sample));
+
+    cout << "Previous researcher name " << temp.researcher << endl;
+
+    strncpy(temp.researcher, newName, MAX_RESEARCHER_NAME - 1);
+    temp.researcher[MAX_RESEARCHER_NAME - 1] = '\0';
+
+    sortedBin.seekp(byteOffset, ios::beg);
+    sortedBin.write(reinterpret_cast<char *>(&temp), sizeof(Sample));
+
+    sortedBin.close();
+
+    cout << "Updated researcher name to " << temp.researcher << endl;
 }
 
 void GENE_BANK::p_deleteSample(int speciesCode, int offset, char *filename)
 {
+    fstream sortedBin(filename, ios::in | ios::out | ios::binary);
+    Sample temp;
+
+    if (!sortedBin)
+    {
+        sortedBin.close();
+        return;
+    }
+
+    streampos byteOffset = (speciesCode + offset) * sizeof(Sample);
+    sortedBin.seekg(byteOffset, ios::beg);
+    sortedBin.read(reinterpret_cast<char *>(&temp), sizeof(Sample));
+
+    if (sortedBin.gcount() != sizeof(Sample))
+    {
+        cout << "ERROR: Could not read record." << endl;
+        sortedBin.close();
+        return;
+    }
+
+    temp.speciesCode = -1;
+
+    // Write the tombstoned record back in place
+    sortedBin.seekp(byteOffset, ios::beg);
+    sortedBin.write(reinterpret_cast<char *>(&temp), sizeof(Sample));
+
+    sortedBin.close();
+
+    cout << "Record deleted at offset " << offset << endl;
 }
 
 void GENE_BANK::p_printRange(int speciesCode, int startIndex, int endIndex, char *filename)
 {
+    fstream sortedBin(filename, ios::in | ios::out | ios::binary);
+    Sample temp;
+
+    if (!sortedBin)
+    {
+        cout << "ERROR: Could not open file." << endl;
+        return;
+    }
+
+    streampos byteOffset = (speciesCode + startIndex) * sizeof(Sample);
+    sortedBin.seekg(byteOffset, ios::beg);
+
+    // Read and print one record at a time across the range
+    for (int i = startIndex; i <= endIndex; i++)
+    {
+        sortedBin.read(reinterpret_cast<char *>(&temp), sizeof(Sample));
+
+        if (sortedBin.gcount() != sizeof(Sample))
+        {
+            cout << "ERROR: Could not read record at offset " << i << endl;
+            break;
+        }
+
+        if (temp.speciesCode == -1) // skip deleted records
+            continue;
+
+        cout << "SampleID: " << temp.sampleID << " | "
+             << "SpeciesCode: " << temp.speciesCode << " | "
+             << "Purity: " << temp.purityScore << " | "
+             << "Researcher: " << temp.researcher << endl;
+    }
 }

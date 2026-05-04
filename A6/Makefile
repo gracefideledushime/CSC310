@@ -1,9 +1,9 @@
-INCLUDE_DIRS := ./Includes
+INCLUDE_DIRS := ./
 CC 		 	:= g++
 CFLAGS 		 := -I$(INCLUDE_DIRS)
 
 # Add dsw.o so the final executable links all needed object files
-OBJS 		 := customErrorClass.o mainSamples.o geneBank.o sorted_samples.bin
+OBJS 		 := customErrorClass.o mainSamples.o geneBank.o
 DEPS 		 := geneBank.cpp \
 				customErrorClass.cpp
 
@@ -25,7 +25,7 @@ a.out: $(OBJS)
 
 # Rule to run the program
 run: a.out
-	./a.out
+	./a.out samples.bin
 
 clean:
 	rm $(OBJS) a.out
