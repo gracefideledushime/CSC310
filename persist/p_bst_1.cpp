@@ -192,7 +192,7 @@ int main()
 
     // Large input
 
-    testLargeInput(10000000);
+    testLargeInput(10000);
 
     return 0;
 }

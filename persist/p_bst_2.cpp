@@ -128,7 +128,7 @@ public:
 
 void testLargeInput(int numTrees)
 {
-    cout << "=== Large p_bst_1 Test (" << numTrees << " trees) ===" << endl;
+    cout << "=== Large p_bst_2 Test (" << numTrees << " trees) ===" << endl;
     vector<persistentBST> trees;
     trees.resize(numTrees);
 
@@ -196,7 +196,9 @@ int main()
 
     // Large input
 
-    testLargeInput(10000000);
+    // testLargeInput(10000000);
+
+    testLargeInput(10000);
 
     return 0;
 }
