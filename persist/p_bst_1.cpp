@@ -2,6 +2,9 @@
 // path copying
 
 #include <iostream>
+#include <chrono>
+#include <vector>
+#include "customErrorClass.h"
 
 using namespace std;
 
@@ -119,9 +122,51 @@ public:
     }
 };
 
+void testLargeInput(int numTrees)
+{
+    cout << "=== Large p_bst_1 Test (" << numTrees << " trees) ===" << endl;
+    vector<persistentBST> trees;
+    trees.resize(numTrees);
+
+    srand(42);
+    auto start2 = chrono::high_resolution_clock::now();
+    cout << "Timing Large input p_bst_1.cpp" << endl;
+    try
+    {
+        for (int i = 0; i < numTrees - 1; ++i)
+        {
+            trees[i + 1] = trees[i].insert(rand() % 257 + 1);
+        }
+
+        cout << "Last tree:" << endl;
+        trees[numTrees - 1].inorder();
+    }
+    catch (MyException &e)
+    {
+        cerr << "MST Error: " << e.what() << endl;
+    }
+    catch (exception &e) // fallback for any other std exceptions
+    {
+        cerr << "Unexpected error: " << e.what() << endl;
+    }
+
+    auto end2 = chrono::high_resolution_clock::now();
+    chrono::duration<double> elapsed2 = end2 - start2;
+    cout << "Time taken for large input: " << elapsed2.count() << " seconds" << endl
+         << endl;
+
+    // // Test delete
+    // for (int i = 0; i < numTrees - 1; ++i)
+    // {
+    //     trees[i + 1] = trees[i].remove(); // using rand here could be chaos
+    // }
+}
+
 int main()
 {
     persistentBST t1;
+    auto start1 = chrono::high_resolution_clock::now();
+    cout << "Timing small input p_bst_1.cpp" << endl;
 
     auto t2 = t1.insert(10);
     auto t3 = t2.insert(20);
@@ -140,6 +185,14 @@ int main()
     t7.inorder(); // 20 30 40
     cout << "t8 (del 40):   ";
     t8.inorder(); // 10 20 30
+    auto end1 = chrono::high_resolution_clock::now();
+    chrono::duration<double> elapsed1 = end1 - start1;
+    cout << "Time taken: " << elapsed1.count() << " seconds" << endl
+         << endl;
+
+    // Large input
+
+    testLargeInput(10000000);
 
     return 0;
 }

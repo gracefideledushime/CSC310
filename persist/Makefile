@@ -1,4 +1,4 @@
-INCLUDE_DIRS := ./Includes
+INCLUDE_DIRS := ./
 CC 		 	:= g++
 CFLAGS 		 := -I$(INCLUDE_DIRS)
 
