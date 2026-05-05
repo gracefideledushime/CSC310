@@ -3,29 +3,18 @@ CC 		 	:= g++
 CFLAGS 		 := -I$(INCLUDE_DIRS)
 
 # Add dsw.o so the final executable links all needed object files
-OBJS 		 := customErrorClass.o main.o mst.o binaryHeap.o binomialHeap.o
-DEPS 		 := binaryHeap.cpp \
-      			mst.cpp \
-        		binomialHeap.cpp \
+OBJS 		 := customErrorClass.o p_bst_1.o
+DEPS 		 :=  p_bst_1.cpp \
 				${INCLUDE_DIRS}/customErrorClass.cpp
 
 .PHONY: clean all
 
-all: customErrorClass.o main.o mst.o binaryHeap.o binomialHeap.o customErrorClass.o
+all: customErrorClass.o p_bst_1.o
 
 customErrorClass.o: ${INCLUDE_DIRS}/customErrorClass.cpp
 	$(CC) -c -o $@ $(CFLAGS) $<
 
-main.o: main.cpp ${DEPS}
-	$(CC) -c -o $@ $(CFLAGS) $<
-
-mst.o: mst.cpp ${DEPS}
-	$(CC) -c -o $@ $(CFLAGS) $<
-
-binomialHeap.o: binomialHeap.cpp
-	$(CC) -c -o $@ $(CFLAGS) $<
-
-binaryHeap.o: binaryHeap.cpp
+p_bst_1.o: p_bst_1.cpp ${DEPS}
 	$(CC) -c -o $@ $(CFLAGS) $<
 
 a.out: $(OBJS)
