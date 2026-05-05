@@ -1,15 +1,14 @@
 INCLUDE_DIRS := ./
-CC 		 	:= g++
+CC			 := g++
 CFLAGS 		 := -I$(INCLUDE_DIRS)
 
 # Add dsw.o so the final executable links all needed object files
 OBJS 		 := customErrorClass.o p_bst_1.o
-DEPS 		 :=  p_bst_1.cpp \
-				${INCLUDE_DIRS}/customErrorClass.cpp
+DEPS 		 := customErrorClass.h
 
 .PHONY: clean all
 
-all: customErrorClass.o p_bst_1.o
+all: customErrorClass.o p_bst_1.o a.out
 
 customErrorClass.o: ${INCLUDE_DIRS}/customErrorClass.cpp
 	$(CC) -c -o $@ $(CFLAGS) $<
