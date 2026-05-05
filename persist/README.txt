@@ -59,3 +59,5 @@ Time taken for large input: 1.00748 seconds
 
 Analysis: for small input, both path copying and shared pointer take almost the same time
 But with large input, path copying seems to be faster as it doesn't care about tracking all the nodes referencing the same pointer, a consideration which the shared pointer approach takes making it slower.
+
+I added a third test to the 2 above because p_queue could not run on 10000000 (O(n^2))
