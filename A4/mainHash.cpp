@@ -22,7 +22,7 @@ int main()
             cout << "Running benchmark for method: " << method << endl;
             cout << "----------------------------------------" << endl;
 
-            HashTable table(100003, method);
+            HashTable table(100, method);
 
             table.benchmarkHashTable(table, data, numSearch, numDelete);
 
