@@ -59,27 +59,19 @@ int HashTable::probe(const string &key, int index, int i) const
     switch (method)
     {
     case LINEAR_PROBING:
-        // complete this
-        index = (h1 + i) % tableSize;
-        cout << 'l probing: ' << index;
+        return (h1 + i) % tableSize;
     case QUADRATIC_PROBING:
-        // complete this
-        index = (h1 + c1 * i + c2 * i ^ 2) % tableSize;
-        cout << 'q probing: ' << index;
-
+        return (h1 + c1 * i + c2 * i * i) % tableSize;
     case DOUBLE_HASHING:
-        // complete this
-        index = (h1 + i * h2) % tableSize;
-        cout << 'd hashing: ' << index;
+        return (h1 + i * h2) % tableSize;
     default:
         return index;
     }
 }
-void HashTable::insert(const string &key, int value)
+void HashTable::insert1(const string &key, int value)
 {
     resizeIfNeeded();
     int index = hash1(key);
-
     switch (method)
     {
     case CHAINING_VECTOR:
@@ -87,7 +79,7 @@ void HashTable::insert(const string &key, int value)
         {
             if (pair.first == key)
             {
-                pair.second = value; // Key already exists, update the value
+                value = pair.second; // Key already exists, update the value
                 return;
             }
         }
@@ -100,7 +92,7 @@ void HashTable::insert(const string &key, int value)
         {
             if (pair.first == key)
             {
-                pair.second = value; // Key already exists, update the value
+                value = pair.second; // Key already exists, update the value
                 return;
             }
         }
@@ -115,17 +107,14 @@ void HashTable::insert(const string &key, int value)
     case LINEAR_PROBING:
     case QUADRATIC_PROBING:
     case DOUBLE_HASHING:
-        // complete this
-        if (tableProbing[index].first.empty())
+        int slot = findEmptySlot(key);
+        if (slot == -1)
         {
-            tableProbing[index] = {key, value};
+            cerr << "Hash table is full, cannot insert: " << key << endl;
+            return;
         }
-        else
-        {
-            int i = 1;
-            index = probe(key, index, i);
-            tableProbing[index] = {key, value};
-        }
+        tableProbing[slot] = {key, value};
+        break;
     }
     elementCount++;
 }
@@ -140,7 +129,6 @@ bool HashTable::search(const string &key, int &value)
         {
             if (pair.first == key)
             {
-                pair.second = value;
                 return true;
             }
         }
@@ -152,7 +140,6 @@ bool HashTable::search(const string &key, int &value)
         {
             if (pair.first == key)
             {
-                pair.second = value; // Key already exists, update the value
                 return true;
             }
         }
@@ -181,13 +168,15 @@ bool HashTable::search(const string &key, int &value)
             i++;
             visited++;
         }
-        return false; // full table, not found
     }
+    return false; // full table, not found
 }
+static const string DELETED = "__DELETED__";
 
 bool HashTable::remove(const string &key)
 {
-    // complete this int index = hash1(key);
+    // complete this
+    int index = hash1(key);
 
     switch (method)
     {
@@ -226,9 +215,6 @@ bool HashTable::remove(const string &key)
     case QUADRATIC_PROBING:
     case DOUBLE_HASHING:
     {
-        // Probing tables can't just blank a slot — that breaks the probe chain
-        // for any key that was inserted AFTER this one collided here.
-        // Solution: use a DELETED tombstone sentinel instead of truly emptying.
         int i = 0;
         int visited = 0;
         while (visited < tableSize)
@@ -279,7 +265,7 @@ void HashTable::benchmarkHashTable(HashTable &table, const vector<pair<string, i
     // Insertions
     for (const auto &pair : data)
     {
-        table.insert(pair.first, pair.second);
+        table.insert1(pair.first, pair.second);
     }
 
     auto insertEnd = chrono::high_resolution_clock::now();
@@ -375,18 +361,174 @@ void HashTable::displayStats()
 
 void HashTable::rehash()
 {
-    // complete this
+    // Step 1 — collect all live entries
+    vector<pair<string, int>> live;
+    for (int i = 0; i < tableSize; i++)
+    {
+        if (!tableProbing[i].first.empty() &&
+            tableProbing[i].first != DELETED)
+        {
+            live.push_back(tableProbing[i]);
+        }
+    }
+
+    // Step 2 — wipe the table
+    for (int i = 0; i < tableSize; i++)
+        tableProbing[i] = {"", 0};
+
+    // Step 3 - re-insert
+    for (auto &pair : live)
+    {
+        int slot = findEmptySlot(pair.first);
+        if (slot != -1)
+            tableProbing[slot] = pair;
+    }
 }
 
 int HashTable::findEmptySlot(const string &key)
 {
     // complete this
+    int index = hash1(key);
+    int firstDel = -1; // remember first tombstone we passed
+    int i = 0;
+    int visited = 0;
+
+    while (visited < tableSize)
+    {
+        int probeIndex = probe(key, index, i);
+
+        if (tableProbing[probeIndex].first == key)
+            return probeIndex; // key already exists → update in place
+
+        if (tableProbing[probeIndex].first == DELETED && firstDel == -1)
+            firstDel = probeIndex; // note first tombstone, keep probing
+                                   // (key might exist further down chain)
+
+        if (tableProbing[probeIndex].first.empty())
+            return (firstDel != -1) ? firstDel : probeIndex;
+        i++;
+        visited++;
+    }
+
+    // Table is full of live entries and tombstones
+    return (firstDel != -1) ? firstDel : -1; // -1 means no room at all
 }
 
 // try experimenting with different thresholds for each technique
 void HashTable::resizeIfNeeded()
 {
-    // complete this
+    switch (method)
+    {
+    // ─── Chaining variants ────
+    case CHAINING_VECTOR:
+    {
+        double loadFactor = (double)elementCount / tableSize;
+        if (loadFactor <= 0.7)
+            return;
+
+        int newSize = tableSize * 2;
+        vector<vector<pair<string, int>>> newTable(newSize);
+
+        for (auto &bucket : tableVector)
+            for (auto &kv : bucket)
+            {
+                // recompute hash against new size inline
+                unsigned long h = 0;
+                for (char c : kv.first)
+                    h = h * 31 + c;
+                newTable[h % newSize].push_back(kv);
+            }
+
+        tableVector = move(newTable);
+        tableSize = newSize;
+        break;
+    }
+    case CHAINING_LIST:
+    {
+        double loadFactor = (double)elementCount / tableSize;
+        if (loadFactor <= 0.7)
+            return;
+
+        int newSize = tableSize * 2;
+        vector<list<pair<string, int>>> newTable(newSize);
+
+        for (auto &bucket : tableList)
+            for (auto &kv : bucket)
+            {
+                unsigned long h = 0;
+                for (char c : kv.first)
+                    h = h * 31 + c;
+                newTable[h % newSize].push_back(kv);
+            }
+
+        tableList = move(newTable);
+        tableSize = newSize;
+        break;
+    }
+    case CHAINING_BST:
+    {
+        double loadFactor = (double)elementCount / tableSize;
+        if (loadFactor <= 0.7)
+            return;
+
+        // collect all entries
+        vector<pair<string, int>> live;
+        for (auto &tree : tableBST)
+        {
+            auto elems = tree.inOrderTraversal();
+            live.insert(live.end(), elems.begin(), elems.end());
+        }
+
+        int newSize = tableSize * 2;
+        tableBST.assign(newSize, AVLTree{}); // fresh trees
+        tableSize = newSize;
+
+        for (auto &kv : live)
+        {
+            unsigned long h = 0;
+            for (char c : kv.first)
+                h = h * 31 + c;
+            tableBST[h % tableSize].insert(kv.first, kv.second);
+        }
+        break;
+    }
+
+    // ─── Open-addressing variants ───
+    case LINEAR_PROBING:
+    case QUADRATIC_PROBING:
+    case DOUBLE_HASHING:
+    {
+        // Count only truly occupied slots (not tombstones)
+        int occupied = 0;
+        for (int i = 0; i < tableSize; i++)
+            if (!tableProbing[i].first.empty() &&
+                tableProbing[i].first != DELETED)
+                occupied++;
+
+        double loadFactor = (double)occupied / tableSize;
+        if (loadFactor <= 0.7)
+            return;
+
+        // Save live entries, grow table, re-insert
+        vector<pair<string, int>> live;
+        live.reserve(occupied);
+        for (int i = 0; i < tableSize; i++)
+            if (!tableProbing[i].first.empty() &&
+                tableProbing[i].first != DELETED)
+                live.push_back(tableProbing[i]);
+
+        tableSize *= 2;
+        tableProbing.assign(tableSize, {"", 0});
+
+        for (auto &kv : live)
+        {
+            int slot = findEmptySlot(kv.first);
+            if (slot != -1)
+                tableProbing[slot] = kv;
+        }
+        break;
+    }
+    }
 }
 
 // Benchmark function for built-in hash table in C++

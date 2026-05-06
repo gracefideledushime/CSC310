@@ -50,7 +50,7 @@ public:
     HashTable(int size, CollisionHandling variant);
     ~HashTable();
 
-    void insert(const string &key, int value);  // COMPLETE THIS
+    void insert1(const string &key, int value); // COMPLETE THIS
     bool search(const string &key, int &value); // COMPLETE THIS
     bool remove(const string &key);             // COMPLETE THIS
 
