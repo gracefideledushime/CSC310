@@ -31,8 +31,9 @@ public:
 
     void insert(int key);
     void merge(BinomialHeap &other);
-    int findMin();
+    binomialNode *findMin();
 
+    binomialNode *findNode(binomialNode *h, int key);
     void deleteMin();
     void decreaseKey(int oldKey, int newKey);
     void deleteKey(int key);

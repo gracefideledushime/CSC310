@@ -1,6 +1,7 @@
 #include "binomial.h"
 
-int main() {
+int main()
+{
     BinomialHeap bh;
     bh.insert(10);
     bh.insert(20);
@@ -12,10 +13,11 @@ int main() {
     bh.insert(8);
     bh.insert(3);
     bh.insert(12);
-    
+
     cout << "Heap after insertions:" << endl;
     bh.printHeap();
-    
-    cout << endl << "Minimum key: " << bh.findMin() << endl;
+
+    cout << endl
+         << "Minimum key: " << bh.findMin()->key << endl;
     return 0;
 }
