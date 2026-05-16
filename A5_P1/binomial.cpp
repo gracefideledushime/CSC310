@@ -1,4 +1,5 @@
 #include "binomial.h"
+#include <climits>
 
 binomialNode::binomialNode(int k)
 {
@@ -127,10 +128,10 @@ void BinomialHeap::merge(BinomialHeap &other)
     }
 }
 
-int BinomialHeap::findMin()
+binomialNode *BinomialHeap::findMin()
 {
     if (!head)
-        return -1;
+        return nullptr;
 
     binomialNode *minNode = head;
     int minKey = head->key;
@@ -143,7 +144,9 @@ int BinomialHeap::findMin()
             minKey = walker->key;
             minNode = walker;
         }
+        walker = walker->sibling;
     }
+    return minNode;
 }
 
 void BinomialHeap::printHeap()
@@ -175,6 +178,96 @@ void BinomialHeap::printTree(binomialNode *node, int space)
     }
 }
 
+binomialNode *BinomialHeap::findNode(binomialNode *h, int key)
+{
+    binomialNode *cur = head;
+    binomialNode *n = head;
+
+    while (cur)
+    {
+        if (cur->key == key)
+        {
+            n = cur;
+        }
+        else
+        {
+            cur = cur->sibling;
+        }
+    }
+    return n;
+}
+
+void BinomialHeap::deleteMin()
+{
+    if (!head)
+        return;
+
+    // 1. find min node and its predecessor
+    binomialNode *minPrev = nullptr;
+    binomialNode *minNode = head;
+    binomialNode *prev = nullptr;
+    binomialNode *cur = head;
+
+    while (cur)
+    {
+        if (cur->key < minNode->key)
+        {
+            minNode = cur;
+            minPrev = prev;
+        }
+        prev = cur;
+        cur = cur->sibling;
+    }
+
+    // 2. splice minNode out of the root list
+    if (minPrev)
+        minPrev->sibling = minNode->sibling;
+    else
+        head = minNode->sibling;
+
+    // 3. reverse children into a temporary heap
+    BinomialHeap childHeap;
+    binomialNode *child = minNode->child;
+    while (child)
+    {
+        binomialNode *next = child->sibling;
+        child->sibling = childHeap.head;
+        child->parent = nullptr;
+        childHeap.head = child;
+        child = next;
+    }
+
+    // 4. merge handles union + consolidation for us
+    merge(childHeap);
+
+    delete minNode;
+}
+
 void BinomialHeap::decreaseKey(int oldKey, int newKey)
 {
+    if (newKey > oldKey)
+        return; // can only decrease
+
+    binomialNode *node = findNode(head, oldKey);
+    if (!node)
+        return;
+
+    node->key = newKey;
+
+    // bubble up: swap keys with parent until heap order is restored
+    binomialNode *cur = node;
+    binomialNode *par = cur->parent;
+    while (par && cur->key < par->key)
+    {
+        swap(cur->key, par->key);
+        cur = par;
+        par = cur->parent;
+    }
+}
+
+void BinomialHeap::deleteKey(int key)
+{
+    // force the target node to become the minimum, then delete it
+    decreaseKey(key, INT_MIN);
+    deleteMin();
 }
