@@ -180,21 +180,17 @@ void BinomialHeap::printTree(binomialNode *node, int space)
 
 binomialNode *BinomialHeap::findNode(binomialNode *h, int key)
 {
-    binomialNode *cur = head;
-    binomialNode *n = head;
+    if (!h)
+        return nullptr;
 
-    while (cur)
-    {
-        if (cur->key == key)
-        {
-            n = cur;
-        }
-        else
-        {
-            cur = cur->sibling;
-        }
-    }
-    return n;
+    if (h->key == key)
+        return h;
+
+    binomialNode *found = findNode(h->child, key);
+    if (found)
+        return found;
+
+    return findNode(h->sibling, key);
 }
 
 void BinomialHeap::deleteMin()
@@ -267,6 +263,10 @@ void BinomialHeap::decreaseKey(int oldKey, int newKey)
 
 void BinomialHeap::deleteKey(int key)
 {
+    binomialNode *node = findNode(head, key);
+    if (!node)
+        return;
+
     // force the target node to become the minimum, then delete it
     decreaseKey(key, INT_MIN);
     deleteMin();
