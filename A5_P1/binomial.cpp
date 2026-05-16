@@ -94,21 +94,7 @@ void BinomialHeap::insert(int key)
 {
     BinomialHeap tempHeap;
     tempHeap.head = new binomialNode(key);
-
-    head = unionHeap(head, tempHeap.head);
-
-    if (!head || !head->sibling)
-        return;
-
-    binomialNode *prev = nullptr;
-    binomialNode *cur = head;
-    binomialNode *next = cur->sibling;
-
-    while (next)
-    {
-        linkTrees(prev, cur, next);
-        next = cur->sibling;
-    }
+    merge(tempHeap);
 }
 
 void BinomialHeap::merge(BinomialHeap &other)
