@@ -1,6 +1,6 @@
 #include "mst.h"
-#include "binaryHeap.h"   // Custom binary heap
-#include "binomialHeap.h" // Custom binomial heap
+#include "binaryHeap.h"   // Custom binary h2
+#include "binomialHeap.h" // Custom binomial h2
 #include "Includes/customErrorClass.h"
 #include <algorithm>
 
@@ -95,10 +95,10 @@ void MST::addEdge(int u, int v, int weight)
 
 int MST::kruskalV1()
 {
-    // 1. Load all edges into custom binary min-heap
-    HEAP heap(edges.size());
+    // 1. Load all edges into custom binary min-h2
+    HEAP h2(edges.size());
     for (const auto &edge : edges)
-        heap.insertH(edge);
+        h2.insertH(edge);
 
     // 2. Init Quick Union — each node is its own root
     QuickUnion qu(n);
@@ -106,15 +106,15 @@ int MST::kruskalV1()
     int totalWeight = 0;
     int edgesUsed = 0;
 
-    // 3. Greedily extract cheapest edge, skip if it forms a cycle
-    while (!heap.isEmpty() && edgesUsed < n - 1)
+    // 3. Greedily extract ch2est edge, skip if it forms a cycle
+    while (!h2.isEmpty() && edgesUsed < n - 1)
     {
-        auto edge = heap.peek();
+        auto edge = h2.peek();
 
         int u = edge.src;
         int v = edge.dest;
         int w = edge.weight;
-        heap.deleteMin(); // O(log E) amortized
+        h2.deleteMin(); // O(log E) amortized
 
         int rootU = qu.find(u); // O(n) worst case — no path compression
         int rootV = qu.find(v);
@@ -132,10 +132,10 @@ int MST::kruskalV1()
 
 int MST::kruskalV2()
 {
-    // 1. Load all edges into custom binomial min-heap
-    HEAP heap(edges.size());
+    // 1. Load all edges into custom binomial min-h2
+    BinomialHeap h2;
     for (const auto &edge : edges)
-        heap.insertH(edge);
+        h2.insert(edge);
 
     // 2. Init Union-Find — path compression + union by rank
     UnionFind uf(n);
@@ -144,14 +144,14 @@ int MST::kruskalV2()
     int edgesUsed = 0;
 
     // 3. Same greedy logic, but faster union-find operations
-    while (!heap.isEmpty() && edgesUsed < n - 1)
+    while (!h2.isEmpty() && edgesUsed < n - 1)
     {
-        auto edge = heap.peek();
+        auto edge = h2.findMin();
 
         int u = edge.src;
         int v = edge.dest;
         int w = edge.weight;
-        heap.deleteMin(); // O(log E) amortized
+        h2.deleteMin(); // O(log E) amortized
 
         int rootU = uf.find(u); // O(α n) — near constant via path compression
         int rootV = uf.find(v);

@@ -3,46 +3,47 @@
 
 #include <iostream>
 #include <iomanip>
-#include "mst.h"  
+#include "mst.h"
 
 using namespace std;
 
-struct binomialNode 
+struct binomialNode
 {
     struct Edge edge;
     int degree;
-    binomialNode* parent;
-    binomialNode* child;
-    binomialNode* sibling;
+    binomialNode *parent;
+    binomialNode *child;
+    binomialNode *sibling;
 
     binomialNode(Edge e);
 };
 
-class BinomialHeap 
+class BinomialHeap
 {
-    private:
-        binomialNode* head;
+private:
+    binomialNode *head;
 
-        binomialNode* unionHeaps(binomialNode* heap1, binomialNode* heap2);
-        binomialNode* mergeTrees(binomialNode* tree1, binomialNode* tree2);
-        void linkTrees(binomialNode*& prev, binomialNode*& curr, binomialNode*& next);
+    binomialNode *unionHeaps(binomialNode *heap1, binomialNode *heap2);
+    binomialNode *mergeTrees(binomialNode *tree1, binomialNode *tree2);
+    void linkTrees(binomialNode *&prev, binomialNode *&curr, binomialNode *&next);
 
-        binomialNode* reverseList(binomialNode* node);
-        binomialNode* findNode(binomialNode* node, Edge edge);
+    binomialNode *reverseList(binomialNode *node);
+    binomialNode *findBinomialNode(binomialNode *node, Edge edge);
 
-    public:
-        BinomialHeap();
+public:
+    BinomialHeap();
 
-        void insert(Edge edge);
-        void merge(BinomialHeap& other);
-        Edge findMin();
+    void insert(Edge edge);
+    void merge(BinomialHeap &other);
+    Edge findMin();
 
-        void deleteMin();
-        void decreaseKey(Edge oldEdge, Edge newEdge);
-        void deleteKey(Edge edge);
+    void deleteMin();
+    void decreaseKey(Edge oldEdge, Edge newEdge);
+    void deleteKey(Edge edge);
 
-        void printHeap();
-        void printTree(binomialNode* node, int space);
+    void printHeap();
+    void printTsree(binomialNode *node, int space);
+    bool isEmpty();
 };
 
 #endif
